@@ -1,0 +1,5 @@
+PROJECT SA OOP 2 
+FLEEP THE EDUCATIONAL FLIP CARD 
+   BASTA DITO MAG COCONTRIBUTE, CODE REVIEW, CHANGES BASTA ANDITO 
+   ETO CHEAT SHIT PARANG GTA NIGGA
+   [git-cheat-sheet.pdf](https://github.com/user-attachments/files/22923432/git-cheat-sheet.pdf)
