@@ -49,6 +49,7 @@ CREATE_TABLES = [
 # Database Class
 # ===============================
 
+
 class Database:
     def __init__(self, path=DB_PATH):
         self.conn = sqlite3.connect(path, check_same_thread=False)

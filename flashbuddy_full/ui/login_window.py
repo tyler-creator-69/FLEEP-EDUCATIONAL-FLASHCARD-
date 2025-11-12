@@ -1,11 +1,10 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit,
     QPushButton, QHBoxLayout, QMessageBox,
-    QToolButton, QMenu,
+    QToolButton, QMenu, QGraphicsOpacityEffect
 )
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QPixmap, QAction, QPalette, QColor
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction
 from core import Database
 from core.user_auth import Auth
 from ui.theme_manager import apply_theme, set_app_font
@@ -34,26 +33,31 @@ class LoginWindow(QDialog):
         apply_theme(self.theme)
 
     def _build_ui(self):
+        # Layout setup
         layout = QVBoxLayout()
         layout.setContentsMargins(36, 36, 36, 36)
         layout.setSpacing(18)
 
-        # === Top Bar with Settings Icon ===
-        top_bar = QHBoxLayout()
-        self.settings_btn = QToolButton()
-        self.settings_btn.setIcon(QIcon.fromTheme("preferences-system"))  # ⚙️ icon
-        self.settings_btn.setToolTip("Settings")
-        self.settings_btn.clicked.connect(self._open_settings_menu)
-        top_bar.addWidget(self.settings_btn, alignment=Qt.AlignmentFlag.AlignLeft)
-        top_bar.addStretch()
-        layout.addLayout(top_bar)
+        # === Background color (matching logo tone) ===
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor("#f3e9d2"))  # warm beige
+        self.setAutoFillBackground(True)
+        self.setPalette(palette)
 
-        # Title
-        title = QLabel("<h2>Welcome to FlashBuddy</h2>")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(title)
+        # === Logo ===
+        self.logo = QLabel()
+        pix = QPixmap("FLEEP.png")  # <-- your logo file
+        if pix.isNull():
+            pix = QPixmap("76894f4f-5988-41f5-85e0-4dd25ad34fe3.png")  # fallback
 
-        # Inputs
+        # Make logo larger (280x180)
+        self.logo.setPixmap(
+            pix.scaled(280, 180, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        )
+        self.logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.logo)
+
+        # === Username and Password Fields ===
         self.user_input = QLineEdit()
         self.user_input.setPlaceholderText("Username")
         self.pass_input = QLineEdit()
@@ -62,7 +66,7 @@ class LoginWindow(QDialog):
         layout.addWidget(self.user_input)
         layout.addWidget(self.pass_input)
 
-        # Buttons layout
+        # === Buttons layout ===
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(14)
 
@@ -75,53 +79,37 @@ class LoginWindow(QDialog):
         btn_layout.addWidget(self.reg_btn)
         layout.addLayout(btn_layout)
 
+        # Apply layout
         self.setLayout(layout)
 
-        # === Strong dialog-level stylesheet to prevent palette overrides ===
-        dialog_style = """
+        # === Style ===
+        self.setStyleSheet("""
         QDialog {
-            background-color: palette(base);
+            background-color: #f3e9d2;
         }
-
+        QLabel {
+            color: #3b2f1e;
+        }
         QLineEdit {
             padding: 8px;
             border-radius: 6px;
-            border: 1px solid #cfd8e3;
-            background: palette(base);
-            color: palette(text);
+            border: 1px solid #cbbf9d;
+            background: #fffaf0;
+            color: #3b2f1e;
             font-size: 14px;
         }
-
         QPushButton {
             padding: 10px 14px;
             border-radius: 6px;
             font-size: 14px;
-            border: 1px solid rgba(0,0,0,0.15);
-            background-color: palette(button);
-            color: palette(button-text);
+            border: 1px solid #d6c4a2;
+            background-color: #d6b88d;
+            color: #3b2f1e;
         }
-
         QPushButton:hover {
-            background-color: palette(mid);
-            color: palette(button-text) !important;
+            background-color: #c8a97f;
         }
-
-        QPushButton:pressed {
-            background-color: palette(dark);
-            color: palette(button-text) !important;
-        }
-
-        QPushButton:focus {
-            outline: none;
-            border: 1px solid palette(highlight);
-        }
-
-        QPushButton:disabled {
-            background-color: palette(midlight);
-            color: palette(dark);
-        }
-        """
-        self.setStyleSheet(dialog_style)
+        """)
 
     # ========== SETTINGS MENU ==========
     def _open_settings_menu(self):
